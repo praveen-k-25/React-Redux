@@ -1,0 +1,140 @@
+Redux have 2 libraries React-Redux and Redux-toolkit.
+
+Topics :
+
+1. Immutability
+2. Functional Programming
+3. Redux Store
+
+==================================== Topics  ========================================
+
+1. Immutability :
+
+   • for arrays we have structuredClone as a inbuild function to make a deepcopy of array.
+   
+   i)  Shallow Copy :
+
+   let d1 = [1,2,[3,4,5]]
+
+   let d2 = [...d1];
+
+   # if any change in inner array of d1 will affect the d2 array.
+
+   ---------------------------------------------------------------------------------------
+
+   ii) Deep Copy :
+
+    let d1 = [[1,2,[3,4,5]],6];
+
+    function deepcopy (arr:any[]){
+        if (arr === null || typeof arr !== "object") return arr;
+        let result : any[] = [];
+        for(let key in arr) {
+            result[key] = deepcopy(arr[key]);
+        }
+        return result;
+    }
+
+    let d2 = deepcopy(d1);
+
+    # Any changes to d1 does not affect d2.
+
+    ------------------------------------------------------------------------------------------
+
+2. Functional Programming :
+
+   • For scable application we use functional programming.
+   • Breaking down problems to smaller ones. will ease the error making.
+   • Higher Order Function :
+        * Take a function as a argument.
+        * retuen a function.
+        * or does both.
+   • Use lodash pipe, compose using currying technique.
+   • Pure Function:
+      * If a same argument passes same output received.
+      * Can be runs in a parallel way -- Concurrency.
+      * This function are cacheable.
+   • Immutability:
+      * Same Immutability concept applicable for Objects too.
+
+   """""" 10-01-2026 - 1:08:19 """""
+
+3. Redux Store :
+
+   • install redus toolkit and react redux - npm install @reduxjs/toolkit react-redux
+   • Create App folder and store.ts file.
+   • We can create a store using configureStore
+
+      +++++++++ Code +++++++++
+
+      import { configureStore } from "@reduxjs/toolkit";
+
+      export const store = configureStore({
+         reducer: {},
+      });
+      
+      ++++++++++++++++++++++++
+
+   • Make the store available for react app:
+
+      +++++++++ Code +++++++++
+
+         import { Provider } from "react-redux";
+         import { store } from "./app/store.ts";
+
+         createRoot(document.getElementById("root")!).render(
+         <StrictMode>
+            <Provider store={store}>
+               <App />
+            </Provider>
+         </StrictMode>
+         );
+      
+      ++++++++++++++++++++++++
+
+   • Create Feature/Counter/ counterSLice.ts
+      * the store is divided as slice like componenting a app for better accessable and control.
+      * CounterSlice is created to handle counter app state handling.
+      * a slice is created using createSlice and export the slice actions and slice reducer as default.
+
+         +++++++++ Code +++++++++
+
+            import { createSlice } from "@reduxjs/toolkit";
+
+            const initialState = {
+               count: 0,
+            };
+
+            export const counterSlice = createSlice({
+               name: "counter",
+               initialState,
+               reducers: {
+                  increment: (state) => {
+                     state.count += 1;
+                  },
+                  decrement: (state) => {
+                     state.count -= 1;
+                  },
+               },
+            });
+
+            export const { increment, decrement } = counterSlice.actions;
+
+            export default counterSlice.reducer;
+
+         ++++++++++++++++++++++++
+
+   • import the counter Reducer in store. 
+
+      +++++++++ Code +++++++++
+         import counterReducer from "../features/Counter/counterSlice";
+
+         export const store = configureStore({
+            reducer: {
+               counter: counterReducer,
+            },
+         });
+      ++++++++++++++++++++++++
+      
+   •  From the above code the slice is available in the store whic is accessible by the react app.
+
