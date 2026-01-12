@@ -5,6 +5,8 @@ Topics :
 1. Immutability
 2. Functional Programming
 3. Redux Store
+4. React Dev tools
+5. Redux Middleware & Asyncronus Operation
 
 ==================================== Topics  ========================================
 
@@ -136,5 +138,39 @@ Topics :
          });
       ++++++++++++++++++++++++
       
-   •  From the above code the slice is available in the store whic is accessible by the react app.
+   • From the above code the slice is available in the store which is accessible by the react app.
+   • To create a function outside slice to for action to be performed in the slice is neglected and DRY method implemented.
+     
+      +++++++++++++ Code ++++++++++++++
+        
+        addPost: {
+            reducer(state: any, action: any) {
+            state.push(action.payload);
+            },
+            prepare(title: string, content: string) {
+            return {
+               payload: {
+                  id: Date.now().toString(),
+                  title,
+                  content,
+               },
+            };
+            },
+         },
 
+      ++++++++++++++++++++++++++++++++++
+
+4. React Dev tools :
+
+   • We can check the data flow in redux tool it in browser.
+
+5. Redux Middleware & Asyncronus Operation : starts [ 03:30:23 ] 
+
+   • The redux middleware like express middleware but servers different purpose.
+   • CreateAsyncThunk :
+
+      * 
+      * 
+      * 
+   • 
+   • 
