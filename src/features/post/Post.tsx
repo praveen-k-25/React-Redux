@@ -1,10 +1,27 @@
-import React, { useState } from "react";
-import { addPost, selectAllPost } from "./postSlice";
+import React, { useEffect, useState } from "react";
+import {
+  addPost,
+  fetchPosts,
+  getPostsError,
+  getPostsStatus,
+  selectAllPost,
+} from "./postSlice";
 import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../app/store";
 
 const Post = () => {
   const postList = useSelector(selectAllPost);
-  const dispatch = useDispatch();
+  const postStatus = useSelector(getPostsStatus);
+  const postError = useSelector(getPostsError);
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Post Status Changed: ", postStatus);
+  }, [postStatus]);
 
   const [postTitle, setPostTitle] = useState("");
   const [postDescription, setPostDescription] = useState("");
@@ -29,13 +46,17 @@ const Post = () => {
     )
       return;
     dispatch(addPost(postTitle, postDescription));
+
     setPostTitle("");
     setPostDescription("");
   };
 
   return (
-    <div className="flex flex-col gap-5 p-3">
-      <form onSubmit={handleSubmit} className="flex gap-8 w-full justify-start">
+    <div className="flex flex-col gap-5 p-3 relative">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col sm:flex-row gap-4 w-full justify-start sticky top-0 bg-white p-2 shadow-md rounded-lg"
+      >
         <fieldset className="">
           <legend className="">Title</legend>
           <input
@@ -54,13 +75,21 @@ const Post = () => {
             className="outline-0 border border-gray-300 rounded-md p-2 px-3 text-sm shadow-sm w-full"
           />
         </fieldset>
-        <fieldset className="flex justify-end items-end">
+        <fieldset className="flex justify-start items-end">
           <button className="px-8 py-2 bg-red-600 text-white rounded-md">
             Submit
           </button>
         </fieldset>
       </form>
-      <div className="grid grid-cols-3 gap-5 p-3">{PostComponent}</div>
+      {postStatus === "loading" ? (
+        <p>Loading...</p>
+      ) : postStatus === "failed" ? (
+        <p>Error: {postError}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 p-3 jus">
+          {PostComponent}
+        </div>
+      )}
     </div>
   );
 };
