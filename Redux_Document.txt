@@ -227,6 +227,8 @@ Topics :
 
       ++++++++++++++++++++++++
 
+      • selectors are created using the adapter's getSelectors method to retrieve data from the normalized state.[07:14:00]
+
 6. Performance Optimization in Redux :
 
    • Reselect library is used for memoization of the selectors.
@@ -247,7 +249,103 @@ Topics :
    • It prevents unnecessary re-renders by caching the results of selectors based on their input arguments.
    • Only recomputes the result when the input arguments change.
 
-      6.1 Normalization of state :
-         • We can use createEntityAdapter for only normalized state structure.
-         • 
-         • 
+7. Persistance Store making :
+
+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+      import { configureStore, combineReducers } from "@reduxjs/toolkit";
+      import { persistStore, persistReducer } from "redux-persist";
+      import storage from "redux-persist/lib/storage";
+
+      import counterReducer from "../features/Counter/counterSlice";
+      import postReducer from "../features/post/postSlice";
+
+      // 1️⃣ Combine reducers
+      const rootReducer = combineReducers({
+         counter: counterReducer,
+         post: postReducer,
+      });
+
+      // 2️⃣ Persist configuration
+      const persistConfig = {
+         key: "root",
+         storage,
+         whitelist: ["counter"], // persist ONLY counter
+      };
+
+      // 3️⃣ Create persisted reducer
+      const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+      // 4️⃣ Configure store
+      export const store = configureStore({
+      reducer: persistedReducer,
+      middleware: (getDefaultMiddleware) =>
+         getDefaultMiddleware({
+            serializableCheck: false,
+         }),
+      });
+
+      // 5️⃣ Create persistor
+      export const persistor = persistStore(store);
+
+      // 6️⃣ Types
+      export type RootState = ReturnType<typeof store.getState>;
+      export type AppDispatch = typeof store.dispatch;
+
+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+8. Middleare :
+   • Middleware is a way to enhance the store with custom functionality.
+   • It provides a third-party extension point between dispatching an action and the moment it reaches the reducer.
+   • Common use cases for middleware include logging, crash reporting, performing asynchronous actions, and more.
+   • Redux Thunk and Redux Saga are popular middleware libraries for handling asynchronous actions in Redux.
+         
+9. createEntityAdapter :
+   * adapters are created using 
+      const postsAdapter = createEntityAdapter({
+         selectId: (post: Post) => post.id.toString(),
+         sortComparer: (a, b) => a.title.localeCompare(b.title),
+      });
+   * and the initialState as
+      const initialState = postsAdapter.getInitialState({
+         status: "idle",
+         error: null,
+      });
+   * CRUD operations are 
+      . postsAdapter.addOne(state, post);
+      . postsAdapter.addMany(state, posts);
+      . postsAdapter.setAll(state, posts);
+      . postsAdapter.updateOne(state, {
+            id: "1",
+            changes: { title: "Updated" }
+         });
+      . postsAdapter.upsertOne(state, post);
+      . postsAdapter.removeOne(state, "1");
+      . postsAdapter.removeMany(state, ["1", "2"]);
+   * Using Slice :
+      const postSlice = createSlice({
+         name: "post",
+         initialState,
+         reducers: {
+            postAdded: postsAdapter.addOne,
+            postUpdated: postsAdapter.updateOne,
+            postDeleted: postsAdapter.removeOne,
+         },
+      });
+   *  Selectors :
+      export const { 
+         selectAll,     -- give everything in normal format.
+         selectById,    -- const post = useSelector((state) =>
+                                          selectById(state, "1")
+                                        );
+         selectIds,     -- useSelector(selectIds);
+         selectEntities,  -- useSelector(selectEntities);
+         selectTotal,   -- useSelector(selectAll);
+      } = postsAdapter.getSelectors(
+            (state: RootState) => state.post
+          );
+
+
+
+
+ 

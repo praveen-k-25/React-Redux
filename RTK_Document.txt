@@ -1,0 +1,9 @@
+Redux Toolkit Query: 
+    • RTK Query is a powerful data fetching and caching tool built on top of Redux Toolkit. 
+    • It simplifies the process of making API requests, managing server state, and caching responses in your Redux store.
+    • RTK Query provides a set of APIs to define endpoints, perform queries and mutations, and handle caching and invalidation of data.
+
+1. API vs API Endpoints :
+   • An API (Application Programming Interface) is a set of rules and protocols that allows different software applications to communicate with each other.
+   • An API endpoint is a specific URL or URI (Uniform Resource Identifier) that represents a specific resource or functionality within an API.
+   • Endpoints is a component of API architecture.

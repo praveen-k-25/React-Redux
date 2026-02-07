@@ -8,6 +8,7 @@ import {
 } from "./postSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../app/store";
+import { authentication } from "../../api";
 
 const Post = () => {
   const postList = useSelector(selectAllPost);
@@ -36,16 +37,23 @@ const Post = () => {
     </article>
   ));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
+    console.log("enter");
+    /* if (
       !postTitle ||
       !postDescription ||
       postTitle === "" ||
       postDescription === ""
     )
-      return;
-    dispatch(addPost(postTitle, postDescription));
+      return; */
+    /* dispatch(addPost(postTitle, postDescription)); */
+    try {
+      await authentication({
+        email: "master@gmail.com",
+        password: "Rockspraveen25@",
+      });
+    } catch (error) {}
 
     setPostTitle("");
     setPostDescription("");
